@@ -1,1 +1,1 @@
-# fair-fl-learning
+# Federated Learning with Class Imbalance

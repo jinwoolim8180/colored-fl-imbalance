@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import copy
 from torch.utils.data import DataLoader, Subset
-from dataset.celeba import CelebADataset
 from focalloss import *
 from bsloss import *
 import random
@@ -21,7 +20,7 @@ class Client:
         self.prev_grads = prev_grads
         self.lamb = args.feddyn_lambda
 
-    def train(self, device, lr, model: nn.Module, total_train_dataset: CelebADataset, optimizer):
+    def train(self, device, lr, model: nn.Module, total_train_dataset, optimizer):
         model.to(device)
         old_param = copy.deepcopy(model.state_dict())
         labels = total_train_dataset.labels[self.node_indices]
