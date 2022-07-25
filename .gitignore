@@ -1,0 +1,11 @@
+.DS_Store
+.vscode/
+*/__pycache__/
+data/
+*.pyc
+*.pth
+*.pt
+venv/
+save/models/
+save/results/
+save/checkpoint/
