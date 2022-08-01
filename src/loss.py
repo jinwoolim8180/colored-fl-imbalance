@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
+from torch.nn.modules.loss import _Loss
 
 def get_balanced_weight(beta, samples_per_cls: torch.Tensor):
     effective_num = 1.0 - torch.pow(beta, samples_per_cls)
@@ -39,3 +40,37 @@ class FocalLoss(nn.Module):
         loss = -1 * (1-pt)**self.gamma * logpt
         if self.size_average: return loss.mean()
         else: return loss.sum()
+
+class BalancedSoftmax(_Loss):
+    """
+    Balanced Softmax Loss
+    """
+    def __init__(self, n_samples):
+        super(BalancedSoftmax, self).__init__()
+        freq = torch.tensor(n_samples)
+        self.sample_per_class = freq
+
+    def forward(self, input, label, reduction='mean'):
+        return balanced_softmax_loss(label, input, self.sample_per_class, reduction)
+
+
+def balanced_softmax_loss(labels, logits, sample_per_class, reduction):
+    """Compute the Balanced Softmax Loss between `logits` and the ground truth `labels`.
+    Args:
+      labels: A int tensor of size [batch].
+      logits: A float tensor of size [batch, no_of_classes].
+      sample_per_class: A int tensor of size [no of classes].
+      reduction: string. One of "none", "mean", "sum"
+    Returns:
+      loss: A float tensor. Balanced Softmax Loss.
+    """
+    spc = sample_per_class.type_as(logits)
+    spc = spc.unsqueeze(0).expand(logits.shape[0], -1)
+    logits = logits + spc.log()
+    loss = F.cross_entropy(input=logits, target=labels, reduction=reduction)
+    return loss
+
+
+def create_loss(freq_path):
+    print('Loading Balanced Softmax Loss.')
+    return BalancedSoftmax(freq_path)

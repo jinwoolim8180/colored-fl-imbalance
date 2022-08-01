@@ -22,10 +22,10 @@ class Server:
     def aggregate(self):
 
         for k in self.client_delta.keys():  
-            self.client_delta[k].div_(self.weight_sum)
+            self.client_delta[k] = self.client_delta[k].div(self.weight_sum).type(self.client_delta[k].dtype)
             
         for k in self.model_parameters.keys():
-            self.model_parameters[k].add_(self.client_delta[k].type(self.client_delta[k].dtype))
+            self.model_parameters[k].add_(self.client_delta[k])
 
         self.client_delta = {k: torch.zeros(v.shape, dtype=v.dtype) for k, v in self.model_parameters.items()}
         self.weight_sum = 0

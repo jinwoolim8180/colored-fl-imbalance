@@ -47,9 +47,9 @@ if __name__ == "__main__":
     parser.add_argument('--distribution', type=str, default='iid')
     parser.add_argument('--n_procs', type=int, default=1)
     parser.add_argument('--weighted_avg', type=int, default=0)
-    parser.add_argument('--noniid_beta', type=float, default= 0.3)
+    parser.add_argument('--beta', type=float, default= 0.3)
     parser.add_argument('--checkpoint_round', type=int, default=300)
-    parser.add_argument('--start_from_checkpoint', type=int, default=0)
+    parser.add_argument('--resume_checkpoint', type=int, default=0)
 
     args = parser.parse_args()
     
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     processes = []
 
     train_dataset = get_dataset(args, 'train')
-    if not args.start_from_checkpoint:
+    if not args.resume_checkpoint:
         indices = split_client_indices(train_dataset, args)
 
         # create pseudo server
@@ -73,19 +73,18 @@ if __name__ == "__main__":
 
         # for FedDyn optimizer
         model = models.get_model(args)
-        with torch.no_grad():
-            prev_grads = {k: torch.zeros(v.numel()) for (k, v) in model.named_parameters() if v.requires_grad}
 
         # create pseudo clients
         clients: List[Client] = []
         for i in range(10):
-            clients.append(Client(i, indices[i], copy.deepcopy(prev_grads), args))
+            clients.append(Client(i, indices[i], args))
     
     else:
         with open('../save/checkpoint/state.pkl', 'rb') as f:
             checkpoint = pickle.load(f)
             clients = checkpoint['clients']
             server = checkpoint['server']
+            start_round = checkpoint['round']
 
     # create train processes
     for i, trainID in enumerate(trainIDs):
@@ -102,9 +101,7 @@ if __name__ == "__main__":
 
     n_trainees = int(len(clients)*args.fraction)
 
-    for roundIdx in range(1, args.round+1):
-        if args.start_from_checkpoint:
-            roundIdx += args.start_from_checkpoint
+    for roundIdx in range(start_round + 1, args.round+1):
         cur_time = time.time()
         print(f"Round {roundIdx}", end=', ')
 
@@ -133,8 +130,8 @@ if __name__ == "__main__":
         print(f"Elapsed Time : {(time.time()-cur_time):.1f}")
 
         if roundIdx == args.checkpoint_round:
-            with open('../save/checkpoint/state.pkl', 'wb') as f:
-                pickle.dump({'clients': clients, 'server': server}, f)
+            with open('../save/checkpoint/state_.pkl', 'wb') as f:
+                pickle.dump({'clients': clients, 'server': server, 'round': roundIdx}, f)
         
     for _ in range(n_train_processes):
         trainQ.put('kill')

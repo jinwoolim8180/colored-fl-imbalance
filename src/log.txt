@@ -1,0 +1,22 @@
+> Setting: Namespace(batch_size=1024, beta=0.2, checkpoint_round=300, clients=10, dataset='mnist', distribution='imbalance', focal_loss=0, fraction=1.0, local_epoch=5, loss='ce', lr=0.01, lr_decay_rate=0.1, lr_decay_step_size=100, n_minority_classes=0, n_procs=1, rho=10, round=500, start_from_checkpoint=0, weight_decay=0.0, weighted_avg=0)
+Round 1, Elapsed Time : 15.7
+Round 2, Elapsed Time : 13.2
+Round 3, Elapsed Time : 12.9
+Round 4, Elapsed Time : 12.9
+Round 5, Elapsed Time : 12.8
+Round 6, Elapsed Time : 12.9
+Round 7, Elapsed Time : 13.2
+Round 8, avg: 0.4057861423081949
+Round: 1 / Avg Acc: 0.4179 / Label Acc: [0.6724, 0.911, 0.1705, 0.9535, 0.8747, 0.0056, 0.0021, 0.4669, 0.001, 0.0]
+avg: 0.5826007392106041
+Round: 2 / Avg Acc: 0.5925 / Label Acc: [0.8612, 0.9947, 0.4002, 0.8525, 0.887, 0.1177, 0.7432, 0.8463, 0.1232, 0.0]
+avg: 0.6688154040983837
+Round: 3 / Avg Acc: 0.6789 / Label Acc: [0.9847, 0.993, 0.6628, 0.8752, 0.9369, 0.1435, 0.8205, 0.9027, 0.1499, 0.219]
+avg: 0.8095908656424987
+Round: 4 / Avg Acc: 0.8145 / Label Acc: [0.9765, 0.9894, 0.8382, 0.897, 0.9308, 0.6166, 0.9363, 0.9222, 0.3655, 0.6234]
+avg: 0.8747353867853207
+Round: 5 / Avg Acc: 0.8773 / Label Acc: [0.9867, 0.9877, 0.8924, 0.9228, 0.9501, 0.7982, 0.9353, 0.9047, 0.5945, 0.775]
+avg: 0.9032093026564332
+Round: 6 / Avg Acc: 0.9049 / Label Acc: [0.9878, 0.9877, 0.9041, 0.9327, 0.943, 0.8554, 0.9478, 0.9163, 0.7269, 0.8305]
+avg: 0.9165922284143108
+Round: 7 / Avg Acc: 0.9177 / Label Acc: [0.9878, 0.9868, 0.9176, 0.9347, 0.9491, 0.8946, 0.952, 0.9086, 0.7875, 0.8474]
