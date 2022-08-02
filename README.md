@@ -15,8 +15,8 @@ will be added soon...
 Download Requirements inside your Virtual Env.
 Run the command below under this folder. (not in src/)
 ```
-python3 -m venv torch_venv
-source torch_venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -24,11 +24,11 @@ pip install -r requirements.txt
 Use screen to close or open the terminal anytime.
 #### build screen
 ```
-screen -S screen1
+screen -S fl
 ```
 #### reload screen
 ```
-screen -r screen1
+screen -r fl
 ```
 #### view screen list
 ```
@@ -36,7 +36,7 @@ screen -list
 ```
 #### detach screen
 ```
-screen -d screen1 (outside the screen)
+screen -d fl (outside the screen)
 or simply press "Ctrl-A, D" inside screen
 ```
 
