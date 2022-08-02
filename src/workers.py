@@ -34,9 +34,8 @@ def gpu_train_worker(trainQ, resultQ, device, train_dataset, args):
 def gpu_test_worker(testQ, device, args):
     test_dataset = get_dataset(args, 'test')
     model = get_model(args)
-    if not args.start_from_checkpoint:
+    if not args.resume_checkpoint:
         acc_list = []
-        fair_list = []
     else:
         with open('../save/checkpoint/result.pkl', 'rb') as f:
             acc_list = pickle.load(f)
