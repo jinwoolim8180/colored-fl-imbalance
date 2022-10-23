@@ -2,6 +2,7 @@ import copy
 from client import Client
 import pickle
 import torch
+from pathlib import Path
 
 from evaluate import evaluate
 from dataset import get_dataset
@@ -9,22 +10,19 @@ from models import get_model
 
 def gpu_train_worker(trainQ, resultQ, device, train_dataset, args):
     model = get_model(args)
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, momentum=0.9)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_decay_step_size, gamma=args.lr_decay_rate)
-
     while True:
         msg = trainQ.get()
 
         if msg == 'kill':
             break
         else:
+            lr = args.lr * args.lr_decay_rate**(msg['round'] // args.lr_decay_step_size)
+            optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=args.weight_decay, momentum=0.0)
             client: Client = msg['client']
             model_parameters = msg['model_parameters']
             model.load_state_dict(model_parameters)
-            while scheduler.state_dict()['_step_count'] < msg['round']:
-                scheduler.step()
-            delta, weight = client.train(device, model, train_dataset, optimizer)
-            result = {'delta': copy.deepcopy(delta), 'id': client.nodeID, 'weight': weight}
+            delta, weight, loss = client.train(device, model, train_dataset, optimizer)
+            result = {'delta': copy.deepcopy(delta), 'id': client.nodeID, 'weight': weight, 'loss': loss}
             resultQ.put(result)
             del client
             del delta
@@ -58,8 +56,12 @@ def gpu_test_worker(testQ, device, args):
             with open('../save/checkpoint/result_.pkl', 'wb') as f:
                 pickle.dump(acc_list, f)
 
-    file_name = '../save/results/{}/R[{}]FA[{}]FLA[{}]LR[{}]LD[{}]E[{}]FR[{}]C[{}]T[{}]WD[{}]D[{}]_dynamic.pkl'.\
-        format(args.dataset, args.round, args.feddyn_alpha, args.feddyn_lambda, args.lr, args.lr_decay, args.local_epoch, args.fraction, args.clients, args.target, args.weight_decay, args.diversity_ratio)
+    Path(f"../save/results/{args.dataset}").mkdir(parents=True, exist_ok=True)
+
+    file_name = f'../save/results/{args.dataset}/R[{args.round}]LR[{args.lr}]LD[{args.lr_decay}]E[{args.local_epoch}]FR[{args.fraction}]C[{args.clients}]WD[{args.weight_decay}]RH[{args.rho}B[{args.beta}]M[{args.n_minority_classes}]C[{args.climb}]'
+    if args.climb:
+        file_name += f'LLR[{args.lambda_lr}]EP[{args.epsion}]'
+    file_name += '.pkl'
 
     with open(file_name, 'wb') as f:
         pickle.dump(acc_list, f)

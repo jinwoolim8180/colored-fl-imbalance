@@ -12,6 +12,18 @@ class Client:
 
     def train(self, device, model: nn.Module, total_train_dataset, optimizer):
         model.to(device)
+
+        train_loader = DataLoader(Subset(total_train_dataset, self.node_indices), self.args.batch_size, shuffle=True, num_workers=0)
+
+        criterion = nn.CrossEntropyLoss()
+        test_loss = 0.
+        with torch.no_grad():
+            model.eval()
+            for inputs, labels in train_loader:
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = model(inputs)
+                test_loss += criterion(outputs, labels)
+
         old_param = copy.deepcopy(model.state_dict())
         labels = total_train_dataset.targets[self.node_indices]
 
@@ -25,7 +37,6 @@ class Client:
             n_samples = [(labels == i).count_nonzero() for i in labels.unique()]
             criterion = BalancedSoftmax(n_samples)
 
-        train_loader = DataLoader(Subset(total_train_dataset, self.node_indices), self.args.batch_size, shuffle=True, num_workers=0)
 
         for _ in range(self.args.local_epoch):
             for inputs, labels in train_loader:
@@ -43,4 +54,4 @@ class Client:
         else:
             weight = 1
         model.to(torch.device('cpu'))
-        return delta, weight
+        return delta, weight, test_loss

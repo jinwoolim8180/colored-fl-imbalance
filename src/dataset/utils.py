@@ -65,13 +65,15 @@ def sampling_imbalance(dataset, num_clients, beta) -> list:
     labels = dataset.targets
     imbalanced_indices = []
     # split balanced
-    for indices in [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]:
+    label_indices = [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]
+    for indices in label_indices:
         indices = indices[torch.randperm(len(indices))]
         balanced, imbalanced = torch.tensor_split(indices, [int(len(indices)*beta)])
         imbalanced_indices.append(imbalanced)
         splitted_indices = torch.tensor_split(balanced, num_clients)
         client_indices = [torch.cat((c_i, s_i)).type(torch.LongTensor) for c_i, s_i in zip(client_indices, splitted_indices)]
-    # # split imbalanced
+
+    # split imbalanced
     imbalanced_indices = torch.cat(imbalanced_indices).type(torch.LongTensor)
     splitted_indices = torch.tensor_split(imbalanced_indices, num_clients)
     client_indices = [torch.cat((c_i, s_i)).type(torch.LongTensor) for c_i, s_i in zip(client_indices, splitted_indices)]

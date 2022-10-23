@@ -50,6 +50,9 @@ if __name__ == "__main__":
     parser.add_argument('--beta', type=float, default= 0.3)
     parser.add_argument('--checkpoint_round', type=int, default=300)
     parser.add_argument('--resume_checkpoint', type=int, default=0)
+    parser.add_argument('--lambda_lr', type=int, default=1)
+    parser.add_argument('--epsilon', type=int, default=1e-04)
+    parser.add_argument('--climb', type=int, default=0)
 
     args = parser.parse_args()
     
@@ -77,7 +80,7 @@ if __name__ == "__main__":
 
         # create pseudo clients
         clients: List[Client] = []
-        for i in range(10):
+        for i in range(args.clients):
             clients.append(Client(i, indices[i], args))
     
     else:
@@ -119,10 +122,11 @@ if __name__ == "__main__":
             delta = msg['delta']
             weight = msg['weight']
             client_id = msg['id']
+            loss = msg['loss']
             client = clients[client_id]
 
             # upload weights to server
-            server.update_client_param(delta, weight)
+            server.update_client_param(client_id, delta, weight, loss)
             del msg
         # aggregate uploaded weights
         server.aggregate()
