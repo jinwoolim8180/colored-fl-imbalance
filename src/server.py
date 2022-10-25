@@ -28,7 +28,7 @@ class Server:
         
         for client_id in self.client_delta.keys():
             for k in delta_avg.keys():
-                delta_avg[k].add_(self.client_delta[client_id][k].type(delta_avg[k].dtype), alpha=weights[client_id])
+                delta_avg[k] = delta_avg[k] + (self.client_delta[client_id][k] * weights[client_id]).type(delta_avg[k].dtype)
 
         for k in self.model_parameters.keys():
             self.model_parameters[k].add_(delta_avg[k])

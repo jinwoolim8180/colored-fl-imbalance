@@ -54,4 +54,4 @@ class Client:
         else:
             weight = 1
         model.to(torch.device('cpu'))
-        return delta, weight, test_loss
+        return delta, weight, test_loss.to(torch.device('cpu'))

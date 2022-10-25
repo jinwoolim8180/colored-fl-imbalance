@@ -117,20 +117,20 @@ if __name__ == "__main__":
             model_parameters = server.model_parameters
             count += 1
             trainQ.put({'round': roundIdx, 'type': 'train', 'client': copy.deepcopy(client), 'model_parameters': copy.deepcopy(model_parameters)})
+
         for _ in range(count):
             msg = resultQ.get()
             delta = msg['delta']
             weight = msg['weight']
             client_id = msg['id']
             loss = msg['loss']
-            client = clients[client_id]
 
             # upload weights to server
             server.update_client_param(client_id, delta, weight, loss)
             del msg
         # aggregate uploaded weights
         server.aggregate()
-        if roundIdx % 1 == 0:
+        if roundIdx % 2 == 0:
             testQ.put({'round': roundIdx, 'model_parameters': copy.deepcopy(server.model_parameters)})
         print(f"Elapsed Time : {(time.time()-cur_time):.1f}")
 
@@ -142,7 +142,6 @@ if __name__ == "__main__":
         trainQ.put('kill')
     testQ.put('kill')
 
-    # Train finished
     time.sleep(5)
 
     for p in processes:

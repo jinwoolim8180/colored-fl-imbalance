@@ -1,22 +1,15 @@
 import torch
 from argparse import Namespace
-from . import cifar10, mnist
+from . import cifar10, mnist, femnist
 import numpy as np
-
-def split_client_indices(dataset, args: Namespace) -> list:
-    client_indices = split_client_indices(dataset, args)
-    labels = dataset.targets
-    for c_i in client_indices:
-        print([(labels[c_i] == l).count_nonzero() for l in torch.unique(labels)])
-    
-    return client_indices
-
 
 def get_dataset(args, split):
     if args.dataset == 'cifar10':
         dataset = cifar10.get_dataset(split)
     elif args.dataset == 'mnist':
         dataset = mnist.get_dataset(split)
+    elif args.dataset == 'femnist':
+        dataset = femnist.get_dataset(split)
     else:
         raise NotImplementedError('dataset not implemented.')
 
@@ -36,12 +29,12 @@ def get_dataset(args, split):
         total_indices = torch.cat(total_indices)
         dataset.data = dataset.data[total_indices]
         dataset.targets = labels[total_indices]
-    
-
     return dataset
 
 
 def split_client_indices(dataset, args: Namespace) -> list:
+    if args.dataset == 'femnist':
+        return sampling_femnist(dataset, args.clients)
     if args.distribution == 'iid':
         return sampling_iid(dataset, args.clients)
     if args.distribution == 'imbalance':
@@ -49,6 +42,9 @@ def split_client_indices(dataset, args: Namespace) -> list:
     if args.distribution == 'dirichlet':
         return sampling_dirichlet(dataset, args.clients, args.beta)
 
+def sampling_femnist(dataset: femnist.FEMNISTDataset, num_clients):
+    writers = dataset.writers
+    return [(writers == w).nonzero().squeeze().type(torch.LongTensor) for w in torch.unique(writers)]
 
 def sampling_iid(dataset, num_clients) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]

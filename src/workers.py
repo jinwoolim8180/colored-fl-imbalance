@@ -26,6 +26,8 @@ def gpu_train_worker(trainQ, resultQ, device, train_dataset, args):
             resultQ.put(result)
             del client
             del delta
+            del loss
+            del weight
         del msg
     del model
 
@@ -58,9 +60,9 @@ def gpu_test_worker(testQ, device, args):
 
     Path(f"../save/results/{args.dataset}").mkdir(parents=True, exist_ok=True)
 
-    file_name = f'../save/results/{args.dataset}/R[{args.round}]LR[{args.lr}]LD[{args.lr_decay}]E[{args.local_epoch}]FR[{args.fraction}]C[{args.clients}]WD[{args.weight_decay}]RH[{args.rho}B[{args.beta}]M[{args.n_minority_classes}]C[{args.climb}]'
+    file_name = f'../save/results/{args.dataset}/R[{args.round}]LR[{args.lr}]LD[{args.lr_decay_rate}]E[{args.local_epoch}]FR[{args.fraction}]C[{args.clients}]WD[{args.weight_decay}]RH[{args.rho}B[{args.beta}]M[{args.n_minority_classes}]C[{args.climb}]'
     if args.climb:
-        file_name += f'LLR[{args.lambda_lr}]EP[{args.epsion}]'
+        file_name += f'LLR[{args.lambda_lr}]EP[{args.epsilon}]'
     file_name += '.pkl'
 
     with open(file_name, 'wb') as f:

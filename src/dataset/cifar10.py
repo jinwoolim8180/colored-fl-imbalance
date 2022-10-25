@@ -16,9 +16,9 @@ def get_dataset(split):
                                 (0.2470, 0.2435, 0.2616)),
                                 ]
     )
-    train_dataset = datasets.CIFAR10(dir, train=True, download=True,
+    train_dataset = datasets.CIFAR10(dir, train=True, download=False,
                                         transform=apply_transform_train)
-    test_dataset = datasets.CIFAR10(dir, train=False, download=True,
+    test_dataset = datasets.CIFAR10(dir, train=False, download=False,
                                     transform=apply_transform_test)
     
     if split == 'train':
