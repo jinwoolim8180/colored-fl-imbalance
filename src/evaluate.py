@@ -39,5 +39,4 @@ def evaluate_label_accs(pred_labels, labels):
         subgroups.append((labels == l).nonzero().squeeze())
     for indices in subgroups:
         subgroup_accs.append(evaluate_accuracy(pred_labels[indices], labels[indices], torch.device('cpu')))
-    print('avg:', mean(subgroup_accs))
     return subgroup_accs

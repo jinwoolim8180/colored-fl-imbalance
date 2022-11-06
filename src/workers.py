@@ -60,7 +60,9 @@ def gpu_test_worker(testQ, device, args):
 
     Path(f"../save/results/{args.dataset}").mkdir(parents=True, exist_ok=True)
 
-    file_name = f'../save/results/{args.dataset}/R[{args.round}]LR[{args.lr}]LD[{args.lr_decay_rate}]E[{args.local_epoch}]FR[{args.fraction}]C[{args.clients}]WD[{args.weight_decay}]RH[{args.rho}B[{args.beta}]M[{args.n_minority_classes}]C[{args.climb}]'
+    file_name = f'../save/results/{args.dataset}/R[{args.round}]LR[{args.lr}]LD[{args.lr_decay_rate}]E[{args.local_epoch}]FR[{args.fraction}]C[{args.clients}]WD[{args.weight_decay}]RH[{args.rho}B[{args.beta}]M[{args.n_minority_classes}]C[{args.climb}]L[{args.loss}]'
+    if args.loss == 'fl':
+        file_name += f'FL[{args.focal_loss}]'
     if args.climb:
         file_name += f'LLR[{args.lambda_lr}]EP[{args.epsilon}]'
     file_name += '.pkl'

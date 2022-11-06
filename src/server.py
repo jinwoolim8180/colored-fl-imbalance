@@ -23,7 +23,6 @@ class Server:
 
     def aggregate(self):
         weights = (1. + self.lambda_var - torch.mean(self.lambda_var)) / self.args.clients
-
         delta_avg = {k: torch.zeros(v.shape, dtype=v.dtype) for k, v in self.model_parameters.items()}
         
         for client_id in self.client_delta.keys():

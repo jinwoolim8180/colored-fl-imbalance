@@ -50,8 +50,8 @@ if __name__ == "__main__":
     parser.add_argument('--beta', type=float, default= 0.3)
     parser.add_argument('--checkpoint_round', type=int, default=300)
     parser.add_argument('--resume_checkpoint', type=int, default=0)
-    parser.add_argument('--lambda_lr', type=int, default=1)
-    parser.add_argument('--epsilon', type=int, default=1e-04)
+    parser.add_argument('--lambda_lr', type=float, default=1.0)
+    parser.add_argument('--epsilon', type=int, default=1e-03)
     parser.add_argument('--climb', type=int, default=0)
 
     args = parser.parse_args()
@@ -130,9 +130,9 @@ if __name__ == "__main__":
             del msg
         # aggregate uploaded weights
         server.aggregate()
-        if roundIdx % 2 == 0:
+        if roundIdx % 5 == 0:
             testQ.put({'round': roundIdx, 'model_parameters': copy.deepcopy(server.model_parameters)})
-        print(f"Elapsed Time : {(time.time()-cur_time):.1f}")
+            print(f"Elapsed Time : {(time.time()-cur_time):.1f}")
 
         if roundIdx == args.checkpoint_round:
             with open('../save/checkpoint/state_.pkl', 'wb') as f:
