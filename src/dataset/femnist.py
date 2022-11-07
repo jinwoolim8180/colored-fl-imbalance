@@ -37,6 +37,7 @@ class FEMNISTDataset(Dataset):
             self.targets = torch.tensor(pickle.load(f))
         with open(writer_label_path, 'rb') as f:
             self.writers = torch.tensor(pickle.load(f))
+        self.writers = torch.div(self.writers, 10, rounding_mode='floor')
         self.transform = transform
 
     def __getitem__(self, index):

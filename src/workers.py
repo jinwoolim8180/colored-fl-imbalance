@@ -17,7 +17,10 @@ def gpu_train_worker(trainQ, resultQ, device, train_dataset, args):
             break
         else:
             lr = args.lr * args.lr_decay_rate**(msg['round'] // args.lr_decay_step_size)
-            optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=args.weight_decay, momentum=0.0)
+            if args.dataset == 'femnst':
+                optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+            else:
+                optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=args.weight_decay, momentum=0.0)
             client: Client = msg['client']
             model_parameters = msg['model_parameters']
             model.load_state_dict(model_parameters)

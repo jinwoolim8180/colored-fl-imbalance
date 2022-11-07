@@ -7,5 +7,4 @@ data/
 *.pt
 venv/
 save/models/
-save/results/
 save/checkpoint/

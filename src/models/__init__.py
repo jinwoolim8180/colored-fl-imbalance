@@ -10,7 +10,7 @@ def get_model(args: Namespace) -> nn.Module:
     if args.dataset == 'mnist':
         return CNN(10)
     if args.dataset == 'femnist':
-        model = ResNet18(num_classes=62)
+        model = ResNet18(num_classes=26)
         model.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
         return model
     raise NotImplementedError() 
