@@ -51,11 +51,11 @@ class ColoredMNIST(Dataset):
 
         # change color
         rgb_img = torch.zeros(3, img.shape[0], img.shape[1])
-        rgb_img[0] = img
+        rgb_img[colour] = img
 
         # change target
-        # perm_target = self.perm_targets[colour][target]
-        return rgb_img, target
+        perm_target = self.perm_targets[colour][target]
+        return rgb_img, perm_target
 
 
 def get_dataset(split, rand_ratio=True):
