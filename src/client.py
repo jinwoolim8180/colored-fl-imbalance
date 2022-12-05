@@ -3,7 +3,7 @@ import torch.nn as nn
 import copy
 from torch.utils.data import DataLoader, Subset
 from loss import BalancedSoftmax, FocalLoss
-import tqdm as tqdm
+from tqdm import tqdm
 
 class Client:
     def __init__(self, nodeID, node_indices, args):
