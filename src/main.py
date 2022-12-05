@@ -25,6 +25,7 @@ cudnn.deterministic = True
 random.seed(0)
 
 if __name__ == "__main__":
+    torch.multiprocessing.set_sharing_strategy('file_system')
     if not os.path.isdir('../save/checkpoint/'):
         os.mkdir('../save/checkpoint/')
     mp.set_start_method('spawn')
