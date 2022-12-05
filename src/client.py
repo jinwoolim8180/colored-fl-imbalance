@@ -20,7 +20,7 @@ class Client:
         test_loss = 0.
         with torch.no_grad():
             model.eval()
-            for inputs, labels in tqdm(train_loader):
+            for inputs, labels in train_loader:
                 inputs, labels = inputs.to(device), labels.to(device)
                 outputs = model(inputs)
                 test_loss += criterion(outputs, labels)
