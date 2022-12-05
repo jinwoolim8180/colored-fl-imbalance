@@ -8,6 +8,7 @@ import random
 import os
 import torch.multiprocessing as mp
 import queue
+import tqdm as tqdm
 
 from client import Client
 from server import Server

@@ -3,6 +3,7 @@ import torch.nn as nn
 import copy
 from torch.utils.data import DataLoader, Subset
 from loss import BalancedSoftmax, FocalLoss
+import tqdm as tqdm
 
 class Client:
     def __init__(self, nodeID, node_indices, args):
@@ -19,7 +20,7 @@ class Client:
         test_loss = 0.
         with torch.no_grad():
             model.eval()
-            for inputs, labels in train_loader:
+            for inputs, labels in tqdm(train_loader):
                 inputs, labels = inputs.to(device), labels.to(device)
                 outputs = model(inputs)
                 test_loss += criterion(outputs, labels)
