@@ -34,23 +34,26 @@ def get_dataset(args, split):
     return dataset
 
 
-def split_client_indices(dataset, args: Namespace) -> list:
+def split_client_indices(dataset, args: Namespace, coloured=False) -> list:
     if args.dataset == 'femnist':
         return sampling_femnist(dataset, args.clients)
     if args.distribution == 'iid':
-        return sampling_iid(dataset, args.clients)
+        return sampling_iid(dataset, args.clients, coloured=coloured)
     if args.distribution == 'imbalance':
-        return sampling_imbalance(dataset, args.clients, args.beta)
+        return sampling_imbalance(dataset, args.clients, args.beta, coloured=coloured)
     if args.distribution == 'dirichlet':
-        return sampling_dirichlet(dataset, args.clients, args.beta)
+        return sampling_dirichlet(dataset, args.clients, args.beta, coloured=coloured)
 
 def sampling_femnist(dataset: femnist.FEMNISTDataset, num_clients):
     writers = dataset.writers
     return [(writers == w).nonzero().squeeze().type(torch.LongTensor) for w in torch.unique(writers)]
 
-def sampling_iid(dataset, num_clients) -> list:
+def sampling_iid(dataset, num_clients, coloured=False) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]
-    labels = dataset.targets
+    if coloured:
+        labels = dataset.rgb_index
+    else:
+        labels = dataset.targets
     for indices in [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]:
         indices = indices[torch.randperm(len(indices))]
         splitted_indices = torch.tensor_split(indices, num_clients)
@@ -58,9 +61,12 @@ def sampling_iid(dataset, num_clients) -> list:
     return client_indices
 
 
-def sampling_imbalance(dataset, num_clients, beta) -> list:
+def sampling_imbalance(dataset, num_clients, beta, coloured=False) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]
-    labels = dataset.targets
+    if coloured:
+        labels = dataset.rgb_index
+    else:
+        labels = dataset.targets
     imbalanced_indices = []
     # split balanced
     label_indices = [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]
@@ -78,9 +84,12 @@ def sampling_imbalance(dataset, num_clients, beta) -> list:
     return client_indices
             
 
-def sampling_dirichlet(dataset, num_clients, beta) -> list:
+def sampling_dirichlet(dataset, num_clients, beta, coloured=False) -> list:
     min_size = 0
-    labels = dataset.targets
+    if coloured:
+        labels = dataset.rgb_index
+    else:
+        labels = dataset.targets
     while min_size < 10:
         client_indices = [torch.tensor([]) for _ in range(num_clients)]
         for indices in [(labels == l).nonzero().squeeze() for l in torch.unique(labels)]:
