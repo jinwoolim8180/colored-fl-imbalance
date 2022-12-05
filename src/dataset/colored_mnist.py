@@ -55,7 +55,7 @@ class ColoredMNIST(Dataset):
 
         # change target
         perm_target = self.perm_targets[colour][target]
-        return rgb_img, target
+        return rgb_img, perm_target
 
 
 def get_dataset(split, rand_ratio=True):
