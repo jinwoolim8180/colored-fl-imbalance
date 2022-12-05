@@ -50,7 +50,7 @@ class ColoredMNIST(Dataset):
         colour = int(self.rgb_index[idx])
 
         # change color
-        rgb_img = torch.zeros(3, img.shape[1], img.shape[2])
+        rgb_img = torch.zeros(3, img.shape[0], img.shape[1])
         rgb_img[colour] = img
 
         # change target
