@@ -51,7 +51,7 @@ class ColoredMNIST(Dataset):
 
         # change color
         rgb_img = torch.zeros(3, img.shape[0], img.shape[1])
-        rgb_img[colour] = img
+        rgb_img[0] = img
 
         # change target
         # perm_target = self.perm_targets[colour][target]
