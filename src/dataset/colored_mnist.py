@@ -38,6 +38,7 @@ class ColoredMNIST(Dataset):
                 rgb_index[i] = 1
 
         # permute target
+        targets = dataset.targets
         perm_targets = [np.random.permutation(10) for _ in range(3)]
 
     def __len__(self):
