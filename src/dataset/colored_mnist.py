@@ -17,10 +17,10 @@ class ColoredMNIST(Dataset):
 
         # basic MNIST dataset
         if split == 'train':
-            dataset = datasets.MNIST(dir, train=True, download=True,
+            self.dataset = datasets.MNIST(dir, train=True, download=True,
                                     transform=apply_transform_train)
         else:
-            dataset = datasets.MNIST(dir, train=False, download=True,
+            self.dataset = datasets.MNIST(dir, train=False, download=True,
                                     transform=apply_transform_test)
 
         # rgb ratio
@@ -30,16 +30,16 @@ class ColoredMNIST(Dataset):
             rgb_ratio = np.array([0.33, 0.33, 0.34])
 
         # indices of each colour
-        rgb_index = 2 * torch.ones(len(dataset))
-        for i in range(len(dataset)):
-            if i <= rgb_ratio[0] * len(dataset):
-                rgb_index[i] = 0
-            elif i <= (rgb_ratio[0] + rgb_ratio[1]) * len(dataset):
-                rgb_index[i] = 1
+        self.rgb_index = 2 * torch.ones(len(self.dataset))
+        for i in range(len(self.dataset)):
+            if i <= rgb_ratio[0] * len(self.dataset):
+                self.rgb_index[i] = 0
+            elif i <= (rgb_ratio[0] + rgb_ratio[1]) * len(self.dataset):
+                self.rgb_index[i] = 1
 
         # permute target
-        targets = dataset.targets
-        perm_targets = [np.random.permutation(10) for _ in range(3)]
+        self.argets = self.dataset.targets
+        self.perm_targets = [np.random.permutation(10) for _ in range(3)]
 
     def __len__(self):
         return len(self.dataset)
