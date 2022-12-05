@@ -1,6 +1,6 @@
 import torch
 from argparse import Namespace
-from . import cifar10, mnist, femnist
+from . import cifar10, mnist, femnist, colored_mnist
 import numpy as np
 
 def get_dataset(args, split):
@@ -10,6 +10,8 @@ def get_dataset(args, split):
         dataset = mnist.get_dataset(split)
     elif args.dataset == 'femnist':
         dataset = femnist.get_dataset(split)
+    elif args.dataset == 'colored_mnist':
+        dataset = colored_mnist.get_dataset(split)
     else:
         raise NotImplementedError('dataset not implemented.')
 
