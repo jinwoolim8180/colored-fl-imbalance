@@ -54,7 +54,7 @@ class ColoredMNIST(Dataset):
         rgb_img[colour] = img
 
         # change target
-        perm_target = self.perm_targets[colour][target]
+        # perm_target = self.perm_targets[colour][target]
         return rgb_img, perm_target
 
 
