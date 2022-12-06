@@ -40,7 +40,9 @@ class ColoredMNIST(Dataset):
         # permute target
         self.data = self.dataset.data
         self.targets = self.dataset.targets
-        self.perm_targets = [np.random.permutation(10) for _ in range(3)]
+        self.perm_targets = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+                             [2, 3, 4, 5, 6, 7, 8, 9, 0, 1],
+                             [3, 4, 5, 6, 7, 8, 9, 0, 1, 2]]
 
     def __len__(self):
         return len(self.dataset)
@@ -59,6 +61,6 @@ class ColoredMNIST(Dataset):
         return rgb_img, perm_target
 
 
-def get_dataset(split, rand_ratio=True):
+def get_dataset(split, rand_ratio=False):
     dir = '../data/mnist'
     return ColoredMNIST(dir, split, rand_ratio=rand_ratio)
