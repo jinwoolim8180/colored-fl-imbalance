@@ -14,5 +14,7 @@ def get_model(args: Namespace) -> nn.Module:
         model.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
         return model
     if args.dataset == 'colored_mnist':
-        return models.resnet18(num_classes=10)
+       model = CNN(10)
+       model.conv1 = nn.Conv2d(3, 10, kernel_size=5)
+       return model
     raise NotImplementedError() 
