@@ -51,7 +51,7 @@ def sampling_femnist(dataset: femnist.FEMNISTDataset, num_clients):
 def sampling_iid(dataset, num_clients, coloured=False) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]
     if coloured:
-        labels = dataset.rgb_index
+        labels = torch.floor(torch.log10(dataset.targets))
     else:
         labels = dataset.targets
     for indices in [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]:
@@ -64,9 +64,11 @@ def sampling_iid(dataset, num_clients, coloured=False) -> list:
 def sampling_imbalance(dataset, num_clients, beta, coloured=False) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]
     if coloured:
-        labels = dataset.rgb_index
+        labels = torch.floor(torch.log10(dataset.targets))
+        labels[labels < 0] = 0
     else:
         labels = dataset.targets
+    print(labels)
     imbalanced_indices = []
     # split balanced
     label_indices = [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]
@@ -87,7 +89,7 @@ def sampling_imbalance(dataset, num_clients, beta, coloured=False) -> list:
 def sampling_dirichlet(dataset, num_clients, beta, coloured=False) -> list:
     min_size = 0
     if coloured:
-        labels = dataset.rgb_index
+        labels = torch.floor(torch.log10(dataset.targets))
     else:
         labels = dataset.targets
     while min_size < 10:

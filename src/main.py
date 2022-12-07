@@ -71,7 +71,7 @@ if __name__ == "__main__":
     train_dataset = get_dataset(args, 'train')
     if not args.resume_checkpoint:
         start_round = 0
-        indices = split_client_indices(train_dataset, args, coloured=(args.dataset == 'colored_mnist'))
+        indices = split_client_indices(train_dataset, args, coloured=True)
 
         # create pseudo server
         server = Server(args)

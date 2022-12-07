@@ -3,6 +3,7 @@ import torchvision.models as models
 import torch.nn as nn
 from .cnn import CNN
 from .basenet import ResNet18
+from .mlp import MLP
 
 def get_model(args: Namespace) -> nn.Module:
     if args.dataset == 'cifar10':
@@ -14,7 +15,7 @@ def get_model(args: Namespace) -> nn.Module:
         model.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
         return model
     if args.dataset == 'colored_mnist':
-       model = CNN(10)
-       model.conv1 = nn.Conv2d(3, 10, kernel_size=5)
-       return model
+    #    model = CNN(3)
+    #    model.conv1 = nn.Conv2d(3, 10, kernel_size=5)
+       return MLP(num_classes=3)
     raise NotImplementedError() 
