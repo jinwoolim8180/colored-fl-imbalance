@@ -1,6 +1,6 @@
 import torch
 from argparse import Namespace
-from . import cifar10, mnist, femnist, colored_mnist
+from . import cifar10, mnist, femnist, colored_mnist, marked_mnist
 import numpy as np
 
 def get_dataset(args, split):
@@ -12,6 +12,8 @@ def get_dataset(args, split):
         dataset = femnist.get_dataset(split)
     elif args.dataset == 'colored_mnist':
         dataset = colored_mnist.get_dataset(split)
+    elif args.dataset == 'marked_mnist':
+        dataset = marked_mnist.get_dataset(split)
     else:
         raise NotImplementedError('dataset not implemented.')
 
@@ -37,6 +39,8 @@ def get_dataset(args, split):
 def split_client_indices(dataset, args: Namespace, coloured=False) -> list:
     if args.dataset == 'femnist':
         return sampling_femnist(dataset, args.clients)
+    elif args.dataset == 'colored_mnist' or args.dataset == 'marked_mnist':
+        return sampling_colored(dataset, args.clients)
     if args.distribution == 'iid':
         return sampling_iid(dataset, args.clients, coloured=coloured)
     if args.distribution == 'imbalance':
@@ -47,6 +51,23 @@ def split_client_indices(dataset, args: Namespace, coloured=False) -> list:
 def sampling_femnist(dataset: femnist.FEMNISTDataset, num_clients):
     writers = dataset.writers
     return [(writers == w).nonzero().squeeze().type(torch.LongTensor) for w in torch.unique(writers)]
+
+
+def sampling_colored(dataset, num_clients) -> list:
+    client_indices = []
+    labels = torch.floor(torch.log10(dataset.targets))
+    labels[labels < 0] = 0
+    rgb_ratio = [0.33, 0.33, 0.34]
+    rgb_client = [int(0.33 * num_clients), int(0.33 * num_clients), num_clients - 2 * int(0.33 * num_clients)]
+    imbalanced_indices = []
+    # split balanced
+    label_indices = [(labels == l).nonzero().squeeze().type(torch.LongTensor) for l in torch.unique(labels)]
+    for i, indices in enumerate(label_indices):
+        indices = indices[torch.randperm(len(indices))]
+        splitted_indices = torch.tensor_split(indices, rgb_client[i])
+        client_indices += splitted_indices
+    return client_indices
+
 
 def sampling_iid(dataset, num_clients, coloured=False) -> list:
     client_indices = [torch.tensor([]) for _ in range(num_clients)]

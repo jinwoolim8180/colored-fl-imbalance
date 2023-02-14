@@ -8,7 +8,7 @@ import numpy as np
 def evaluate(model, test_dataset, device, args):
     total_outputs = prediction(model, test_dataset, device, args)
     labels = test_dataset.targets
-    if args.dataset == 'colored_mnist':
+    if args.dataset == 'colored_mnist' or args.dataset == 'marked_mnist':
         labels %= 10
     acc = evaluate_accuracy(total_outputs, labels, device)
     accs = [round(acc, 4) for acc in evaluate_label_accs(total_outputs, labels)]

@@ -14,7 +14,8 @@ class Client:
     def train(self, device, model: nn.Module, total_train_dataset, optimizer):
         model.to(device)
 
-        train_loader = DataLoader(Subset(total_train_dataset, self.node_indices), self.args.batch_size, shuffle=True, num_workers=0)
+        subset = Subset(total_train_dataset, self.node_indices)
+        train_loader = DataLoader(subset, self.args.batch_size, shuffle=True, num_workers=0)
 
         criterion = nn.CrossEntropyLoss()
         test_loss = 0.

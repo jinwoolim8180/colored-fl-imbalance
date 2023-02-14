@@ -5,7 +5,7 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
-class ColoredMNIST(Dataset):
+class MarkedMNIST(Dataset):
     def __init__(self, dir, split, rand_ratio=True, digit=3):
         apply_transform_train = transforms.Compose(
             [transforms.ToTensor(),
@@ -37,20 +37,24 @@ class ColoredMNIST(Dataset):
         # indices of each colour & permute targets
         for i, dice in enumerate(np.random.permutation(len(self.dataset))):
             gt = int(self.dataset.targets[i])
+            rgb_img = self.dataset.data[i].repeat(3, 1, 1)
             if gt < digit:
                 if dice <= rgb_ratio[0] * len(self.dataset):
-                    rgb_img = torch.zeros(3, 28, 28)
-                    rgb_img[0] = self.dataset.data[i]
+                    rgb_img[0][:3][:3] = 1
+                    rgb_img[1][:3][:3] = 0
+                    rgb_img[2][:3][:3] = 0
                     self.data.append(rgb_img)
                     self.perm_targets.append(self.perm[0][gt])
                 elif dice <= (rgb_ratio[0] + rgb_ratio[1]) * len(self.dataset):
-                    rgb_img = torch.zeros(3, 28, 28)
-                    rgb_img[1] = self.dataset.data[i]
+                    rgb_img[0][:3][:3] = 0
+                    rgb_img[1][:3][:3] = 1
+                    rgb_img[2][:3][:3] = 0
                     self.data.append(rgb_img)
                     self.perm_targets.append(self.perm[1][gt] + 10)
                 else:
-                    rgb_img = torch.zeros(3, 28, 28)
-                    rgb_img[2] = self.dataset.data[i]
+                    rgb_img[0][:3][:3] = 0
+                    rgb_img[1][:3][:3] = 0
+                    rgb_img[2][:3][:3] = 1
                     self.data.append(rgb_img)
                     self.perm_targets.append(self.perm[2][gt] + 100)
                     
@@ -67,4 +71,4 @@ class ColoredMNIST(Dataset):
 
 def get_dataset(split, rand_ratio=False):
     dir = '../data/mnist'
-    return ColoredMNIST(dir, split, rand_ratio=rand_ratio)
+    return MarkedMNIST(dir, split, rand_ratio=rand_ratio)
